@@ -5,6 +5,11 @@ package printqueue;
 
 option go_package = "github.com/brotherlogic/printqueue/proto";
 
+enum Destination {
+    DESTINATION_UNKNOWN = 0;
+    DESTINATION_RECEIPT = 1;
+}
+
 message PrintRequest {
     repeated string lines = 1;
     string origin = 2;
@@ -16,10 +21,6 @@ message PrintRequest {
     }
     Urgency urgency = 3;
 
-    enum Destination {
-        DESTINATION_UNKNOWN = 0;
-        DESTINATION_RECEIPT = 1;
-    }
     Destination destination = 4;
 
     enum FANOUT {
@@ -33,7 +34,19 @@ message PrintResponse {
     string id = 1;
 }
 
+message ClientPrintRequest {
+    repeated string lines = 1;
+    string origin = 2;
+    Destination destination = 3;
+}
+
+message ClientPrintResponse {};
+
 // Internally accessible service
 service PrintService {
     rpc Print(PrintRequest) returns (PrintResponse) {};
+}
+
+service PrintClientService {
+    rpc ClientPrint(ClientPrintRequest) returns (ClientPrintResponse) {};
 }
