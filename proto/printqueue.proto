@@ -1,0 +1,39 @@
+
+syntax = "proto3";
+
+package printqueue;
+
+option go_package = "github.com/brotherlogic/printqueue/proto";
+
+message PrintRequest {
+    repeated string lines = 1;
+    string origin = 2;
+
+    enum Urgency {
+        URGENCY_UNKNOWN = 0;
+        URGENCY_REGULAR = 1;
+        URGENCY_IMMEDIATE = 2;
+    }
+    Urgency urgency = 3;
+
+    enum Destination {
+        DESTINATION_UNKNOWN = 0;
+        DESTINATION_RECEIPT = 1;
+    }
+    Destination destination = 4;
+
+    enum FANOUT {
+        FANOUT_UNKNOWN = 0;
+        FANOUT_ONE = 1;
+        FANOUT_ALL = 2;
+    }
+}
+
+message PrintResponse {
+    string id = 1;
+}
+
+// Internally accessible service
+service PrintService {
+    rpc Print(PrintRequest) returns (PrintResponse) {};
+}
