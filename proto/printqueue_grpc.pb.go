@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PrintServiceClient interface {
 	Print(ctx context.Context, in *PrintRequest, opts ...grpc.CallOption) (*PrintResponse, error)
+	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 }
 
 type printServiceClient struct {
@@ -42,11 +43,21 @@ func (c *printServiceClient) Print(ctx context.Context, in *PrintRequest, opts .
 	return out, nil
 }
 
+func (c *printServiceClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
+	out := new(DeleteResponse)
+	err := c.cc.Invoke(ctx, "/printqueue.PrintService/Delete", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PrintServiceServer is the server API for PrintService service.
 // All implementations should embed UnimplementedPrintServiceServer
 // for forward compatibility
 type PrintServiceServer interface {
 	Print(context.Context, *PrintRequest) (*PrintResponse, error)
+	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
 }
 
 // UnimplementedPrintServiceServer should be embedded to have forward compatible implementations.
@@ -55,6 +66,9 @@ type UnimplementedPrintServiceServer struct {
 
 func (UnimplementedPrintServiceServer) Print(context.Context, *PrintRequest) (*PrintResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Print not implemented")
+}
+func (UnimplementedPrintServiceServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 
 // UnsafePrintServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -86,6 +100,24 @@ func _PrintService_Print_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PrintService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PrintServiceServer).Delete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/printqueue.PrintService/Delete",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PrintServiceServer).Delete(ctx, req.(*DeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PrintService_ServiceDesc is the grpc.ServiceDesc for PrintService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -96,6 +128,10 @@ var PrintService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Print",
 			Handler:    _PrintService_Print_Handler,
+		},
+		{
+			MethodName: "Delete",
+			Handler:    _PrintService_Delete_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

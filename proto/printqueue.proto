@@ -51,9 +51,16 @@ message ClientPrintRequest {
 
 message ClientPrintResponse {};
 
+message DeleteRequest {
+    string id = 1;
+}
+
+message DeleteResponse {}
+
 // Internally accessible service
 service PrintService {
     rpc Print(PrintRequest) returns (PrintResponse) {};
+    rpc Delete(DeleteRequest) returns (DeleteResponse) {};
 }
 
 service PrintClientService {

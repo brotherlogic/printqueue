@@ -30,3 +30,10 @@ func (s *Server) Print(ctx context.Context, req *pb.PrintRequest) (*pb.PrintResp
 
 	return &pb.PrintResponse{Id: uid}, err
 }
+
+func (s *Server) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteResponse, error) {
+	_, err := s.client.Delete(ctx, &rspb.DeleteRequest{
+		Key: fmt.Sprintf("printqueue/%v", req.GetId()),
+	})
+	return &pb.DeleteResponse{}, err
+}
