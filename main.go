@@ -9,6 +9,8 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
+
+	pb "github.com/brotherlogic/printqueue/proto"
 )
 
 var (
@@ -26,13 +28,14 @@ func NewServer() *Server {
 func main() {
 	flag.Parse()
 
-	//s := NewServer()
+	s := NewServer()
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
 		log.Fatalf("printqueue is unable to listen on the grpc port %v: %v", *port, err)
 	}
 	gs := grpc.NewServer()
+	pb.RegisterPrintServiceServer(gs, s)
 
 	go func() {
 		if err := gs.Serve(lis); err != nil {
