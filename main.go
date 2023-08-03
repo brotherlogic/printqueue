@@ -11,6 +11,8 @@ import (
 	"google.golang.org/grpc"
 
 	pb "github.com/brotherlogic/printqueue/proto"
+
+	rstore_client "github.com/brotherlogic/rstore/client"
 )
 
 var (
@@ -19,6 +21,7 @@ var (
 )
 
 type Server struct {
+	client rstore_client.RStoreClient
 }
 
 func NewServer() *Server {

@@ -10,24 +10,33 @@ enum Destination {
     DESTINATION_RECEIPT = 1;
 }
 
+enum Urgency {
+    URGENCY_UNKNOWN = 0;
+    URGENCY_REGULAR = 1;
+    URGENCY_IMMEDIATE = 2;
+}
+
+enum Fanout {
+    FANOUT_UNKNOWN = 0;
+    FANOUT_ONE = 1;
+    FANOUT_ALL = 2;
+}
+
+
 message PrintRequest {
     repeated string lines = 1;
     string origin = 2;
-
-    enum Urgency {
-        URGENCY_UNKNOWN = 0;
-        URGENCY_REGULAR = 1;
-        URGENCY_IMMEDIATE = 2;
-    }
     Urgency urgency = 3;
-
     Destination destination = 4;
+    Fanout fanout = 5 ;
+}
 
-    enum FANOUT {
-        FANOUT_UNKNOWN = 0;
-        FANOUT_ONE = 1;
-        FANOUT_ALL = 2;
-    }
+message StoredPrintRequest {
+    repeated string lines = 1;
+    string origin = 2;
+    Urgency urgency = 3;
+    Destination destination = 4;
+    Fanout fanout = 5;
 }
 
 message PrintResponse {
