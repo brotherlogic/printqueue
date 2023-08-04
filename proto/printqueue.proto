@@ -46,7 +46,7 @@ message PrintResponse {
 message ClientPrintRequest {
     repeated string lines = 1;
     string origin = 2;
-    Destination destination = 3;
+    Urgency urgency = 3;
 }
 
 message ClientPrintResponse {};
