@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type PrintServiceClient interface {
 	Print(ctx context.Context, in *PrintRequest, opts ...grpc.CallOption) (*PrintResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
+	RegisterPrinter(ctx context.Context, in *RegisterPrinterRequest, opts ...grpc.CallOption) (*RegisterPrinterResponse, error)
 }
 
 type printServiceClient struct {
@@ -52,12 +53,22 @@ func (c *printServiceClient) Delete(ctx context.Context, in *DeleteRequest, opts
 	return out, nil
 }
 
+func (c *printServiceClient) RegisterPrinter(ctx context.Context, in *RegisterPrinterRequest, opts ...grpc.CallOption) (*RegisterPrinterResponse, error) {
+	out := new(RegisterPrinterResponse)
+	err := c.cc.Invoke(ctx, "/printqueue.PrintService/RegisterPrinter", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PrintServiceServer is the server API for PrintService service.
 // All implementations should embed UnimplementedPrintServiceServer
 // for forward compatibility
 type PrintServiceServer interface {
 	Print(context.Context, *PrintRequest) (*PrintResponse, error)
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
+	RegisterPrinter(context.Context, *RegisterPrinterRequest) (*RegisterPrinterResponse, error)
 }
 
 // UnimplementedPrintServiceServer should be embedded to have forward compatible implementations.
@@ -69,6 +80,9 @@ func (UnimplementedPrintServiceServer) Print(context.Context, *PrintRequest) (*P
 }
 func (UnimplementedPrintServiceServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedPrintServiceServer) RegisterPrinter(context.Context, *RegisterPrinterRequest) (*RegisterPrinterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterPrinter not implemented")
 }
 
 // UnsafePrintServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -118,6 +132,24 @@ func _PrintService_Delete_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PrintService_RegisterPrinter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterPrinterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PrintServiceServer).RegisterPrinter(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/printqueue.PrintService/RegisterPrinter",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PrintServiceServer).RegisterPrinter(ctx, req.(*RegisterPrinterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PrintService_ServiceDesc is the grpc.ServiceDesc for PrintService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -133,6 +165,10 @@ var PrintService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Delete",
 			Handler:    _PrintService_Delete_Handler,
 		},
+		{
+			MethodName: "RegisterPrinter",
+			Handler:    _PrintService_RegisterPrinter_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "printqueue.proto",
@@ -143,6 +179,7 @@ var PrintService_ServiceDesc = grpc.ServiceDesc{
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PrintClientServiceClient interface {
 	ClientPrint(ctx context.Context, in *ClientPrintRequest, opts ...grpc.CallOption) (*ClientPrintResponse, error)
+	Heartbeat(ctx context.Context, in *HeartbeatRequest, opts ...grpc.CallOption) (*HeartbeatResponse, error)
 }
 
 type printClientServiceClient struct {
@@ -162,11 +199,21 @@ func (c *printClientServiceClient) ClientPrint(ctx context.Context, in *ClientPr
 	return out, nil
 }
 
+func (c *printClientServiceClient) Heartbeat(ctx context.Context, in *HeartbeatRequest, opts ...grpc.CallOption) (*HeartbeatResponse, error) {
+	out := new(HeartbeatResponse)
+	err := c.cc.Invoke(ctx, "/printqueue.PrintClientService/Heartbeat", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PrintClientServiceServer is the server API for PrintClientService service.
 // All implementations should embed UnimplementedPrintClientServiceServer
 // for forward compatibility
 type PrintClientServiceServer interface {
 	ClientPrint(context.Context, *ClientPrintRequest) (*ClientPrintResponse, error)
+	Heartbeat(context.Context, *HeartbeatRequest) (*HeartbeatResponse, error)
 }
 
 // UnimplementedPrintClientServiceServer should be embedded to have forward compatible implementations.
@@ -175,6 +222,9 @@ type UnimplementedPrintClientServiceServer struct {
 
 func (UnimplementedPrintClientServiceServer) ClientPrint(context.Context, *ClientPrintRequest) (*ClientPrintResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ClientPrint not implemented")
+}
+func (UnimplementedPrintClientServiceServer) Heartbeat(context.Context, *HeartbeatRequest) (*HeartbeatResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Heartbeat not implemented")
 }
 
 // UnsafePrintClientServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -206,6 +256,24 @@ func _PrintClientService_ClientPrint_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PrintClientService_Heartbeat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HeartbeatRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PrintClientServiceServer).Heartbeat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/printqueue.PrintClientService/Heartbeat",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PrintClientServiceServer).Heartbeat(ctx, req.(*HeartbeatRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PrintClientService_ServiceDesc is the grpc.ServiceDesc for PrintClientService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -216,6 +284,10 @@ var PrintClientService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ClientPrint",
 			Handler:    _PrintClientService_ClientPrint_Handler,
+		},
+		{
+			MethodName: "Heartbeat",
+			Handler:    _PrintClientService_Heartbeat_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

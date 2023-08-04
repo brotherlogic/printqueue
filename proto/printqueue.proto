@@ -57,12 +57,26 @@ message DeleteRequest {
 
 message DeleteResponse {}
 
+message RegisterPrinterRequest {
+    string id = 1;
+    string callback_address = 2;
+    Destination receiver_type = 3;
+
+}
+
+message RegisterPrinterResponse {}
+
 // Internally accessible service
 service PrintService {
     rpc Print(PrintRequest) returns (PrintResponse) {};
     rpc Delete(DeleteRequest) returns (DeleteResponse) {};
+    rpc RegisterPrinter(RegisterPrinterRequest) returns (RegisterPrinterResponse) {};
 }
+
+message HeartbeatRequest {}
+message HeartbeatResponse {}
 
 service PrintClientService {
     rpc ClientPrint(ClientPrintRequest) returns (ClientPrintResponse) {};
+    rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {};
 }

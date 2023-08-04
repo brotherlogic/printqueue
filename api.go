@@ -37,3 +37,12 @@ func (s *Server) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteR
 	})
 	return &pb.DeleteResponse{}, err
 }
+
+func (s *Server) RegisterPrinter(ctx context.Context, req *pb.RegisterPrinterRequest) (*pb.RegisterPrinterResponse, error) {
+	s.printers = append(s.printers, &printer{
+		id:      req.GetId(),
+		address: req.GetCallbackAddress(),
+		ptype:   req.GetReceiverType(),
+	})
+	return &pb.RegisterPrinterResponse{}, nil
+}

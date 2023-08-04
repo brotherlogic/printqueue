@@ -34,3 +34,20 @@ func TestDelete(t *testing.T) {
 		t.Errorf("Delete fail: %v", err)
 	}
 }
+
+func TestRegister(t *testing.T) {
+	s := InitTestServer()
+
+	_, err := s.RegisterPrinter(context.Background(), &pb.RegisterPrinterRequest{
+		Id:              "id",
+		CallbackAddress: "fake",
+		ReceiverType:    pb.Destination_DESTINATION_UNKNOWN,
+	})
+	if err != nil {
+		t.Errorf("Bad register: %v", err)
+	}
+
+	if len(s.getPrinters()) != 1 {
+		t.Errorf("Printer was not registered")
+	}
+}
