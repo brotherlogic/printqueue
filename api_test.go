@@ -51,3 +51,12 @@ func TestRegister(t *testing.T) {
 		t.Errorf("Printer was not registered")
 	}
 }
+
+func TestHeartbeat(t *testing.T) {
+	s := InitTestServer()
+	_, err := s.Heartbeat(context.Background(), &pb.HeartbeatRequest{})
+
+	if err != nil {
+		t.Errorf("Heartbeat failed")
+	}
+}

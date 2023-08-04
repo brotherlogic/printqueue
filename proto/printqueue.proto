@@ -46,7 +46,7 @@ message PrintResponse {
 message ClientPrintRequest {
     repeated string lines = 1;
     string origin = 2;
-    Destination destination = 3;
+    Urgency urgency = 3;
 }
 
 message ClientPrintResponse {};
@@ -66,15 +66,17 @@ message RegisterPrinterRequest {
 
 message RegisterPrinterResponse {}
 
+message HeartbeatRequest {}
+message HeartbeatResponse {}
+
 // Internally accessible service
 service PrintService {
     rpc Print(PrintRequest) returns (PrintResponse) {};
     rpc Delete(DeleteRequest) returns (DeleteResponse) {};
     rpc RegisterPrinter(RegisterPrinterRequest) returns (RegisterPrinterResponse) {};
+    rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {};
 }
 
-message HeartbeatRequest {}
-message HeartbeatResponse {}
 
 service PrintClientService {
     rpc ClientPrint(ClientPrintRequest) returns (ClientPrintResponse) {};
