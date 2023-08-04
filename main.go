@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
@@ -20,12 +21,24 @@ var (
 	metricsPort = flag.Int("metrics_port", 8081, "Metrics port")
 )
 
+type printer struct {
+	id            string
+	address       string
+	lastHeartbeat time.Time
+	ptype         pb.Destination
+}
+
 type Server struct {
-	client rstore_client.RStoreClient
+	client   rstore_client.RStoreClient
+	printers []*printer
 }
 
 func NewServer() *Server {
 	return &Server{}
+}
+
+func (s *Server) getPrinters() []*printer {
+	return s.printers
 }
 
 func main() {
