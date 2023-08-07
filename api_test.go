@@ -24,7 +24,9 @@ func TestPrint(t *testing.T) {
 func TestAck(t *testing.T) {
 	s := InitTestServer()
 
-	res, err := s.Print(context.Background(), &pb.PrintRequest{})
+	res, err := s.Print(context.Background(), &pb.PrintRequest{
+		Fanout: pb.Fanout_FANOUT_ONE,
+	})
 	if err != nil || res.GetId() == "" {
 		t.Errorf("Failed to print: %v and %v", res, err)
 	}

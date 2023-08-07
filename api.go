@@ -13,6 +13,8 @@ import (
 )
 
 func (s *Server) Print(ctx context.Context, req *pb.PrintRequest) (*pb.PrintResponse, error) {
+	uid := uuid.New().String()
+
 	stored := &pb.StoredPrintRequest{
 		Lines:       req.GetLines(),
 		Origin:      req.GetOrigin(),
@@ -22,7 +24,6 @@ func (s *Server) Print(ctx context.Context, req *pb.PrintRequest) (*pb.PrintResp
 	}
 	data, _ := proto.Marshal(stored)
 
-	uid := uuid.New().String()
 	_, err := s.client.Write(ctx, &rspb.WriteRequest{
 		Key:   fmt.Sprintf("printqueue/%v", uid),
 		Value: &anypb.Any{Value: data},
