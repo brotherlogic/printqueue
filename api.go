@@ -61,7 +61,10 @@ func (s *Server) Ack(ctx context.Context, req *pb.AckRequest) (*pb.AckResponse, 
 	}
 
 	val := &pb.StoredPrintRequest{}
-	proto.Unmarshal(job.GetValue().GetValue(), val)
+	err = proto.Unmarshal(job.GetValue().GetValue(), val)
+	if err != nil {
+		return nil, err
+	}
 
 	if val.GetDestination() == req.GetAckType() {
 		if val.GetFanout() == pb.Fanout_FANOUT_ONE {
