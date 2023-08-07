@@ -21,6 +21,31 @@ func TestPrint(t *testing.T) {
 	}
 }
 
+func TestAck(t *testing.T) {
+	s := InitTestServer()
+
+	res, err := s.Print(context.Background(), &pb.PrintRequest{})
+	if err != nil || res.GetId() == "" {
+		t.Errorf("Failed to print: %v and %v", res, err)
+	}
+
+	_, err = s.Ack(context.Background(), &pb.AckRequest{
+		Id: res.GetId(),
+	})
+	if err != nil {
+		t.Errorf("Bad ack: %v", err)
+	}
+
+	queue, err := s.getQueue(context.Background())
+	if err != nil {
+		t.Fatalf("Bad queue get: %v", err)
+	}
+
+	if len(queue) != 0 {
+		t.Errorf("Print job was not removed post ack: %v", queue)
+	}
+}
+
 func TestDelete(t *testing.T) {
 	s := InitTestServer()
 

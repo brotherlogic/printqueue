@@ -76,9 +76,17 @@ message RegisterPrinterResponse {
 message HeartbeatRequest {}
 message HeartbeatResponse {}
 
+message AckRequest {
+    string id = 1;
+    Destination ack_type = 2;
+}
+
+message AckResponse {}
+
 // Internally accessible service
 service PrintService {
     rpc Print(PrintRequest) returns (PrintResponse) {};
+    rpc Ack(AckRequest) returns (AckResponse) {};
     rpc Delete(DeleteRequest) returns (DeleteResponse) {};
     rpc RegisterPrinter(RegisterPrinterRequest) returns (RegisterPrinterResponse) {};
     rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {};

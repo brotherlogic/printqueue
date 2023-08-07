@@ -50,3 +50,7 @@ func (s *Server) RegisterPrinter(ctx context.Context, req *pb.RegisterPrinterReq
 func (s *Server) Heartbeat(_ context.Context, _ *pb.HeartbeatRequest) (*pb.HeartbeatResponse, error) {
 	return &pb.HeartbeatResponse{}, nil
 }
+
+func (s *Server) Ack(ctx context.Context, req *pb.AckRequest) (*pb.AckResponse, error) {
+	return &pb.AckResponse{}, nil
+}
