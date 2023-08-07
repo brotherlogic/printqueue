@@ -13,6 +13,8 @@ import (
 )
 
 func (s *Server) Print(ctx context.Context, req *pb.PrintRequest) (*pb.PrintResponse, error) {
+	uid := uuid.New().String()
+
 	stored := &pb.StoredPrintRequest{
 		Lines:       req.GetLines(),
 		Origin:      req.GetOrigin(),
@@ -22,7 +24,6 @@ func (s *Server) Print(ctx context.Context, req *pb.PrintRequest) (*pb.PrintResp
 	}
 	data, _ := proto.Marshal(stored)
 
-	uid := uuid.New().String()
 	_, err := s.client.Write(ctx, &rspb.WriteRequest{
 		Key:   fmt.Sprintf("printqueue/%v", uid),
 		Value: &anypb.Any{Value: data},
@@ -49,4 +50,31 @@ func (s *Server) RegisterPrinter(ctx context.Context, req *pb.RegisterPrinterReq
 
 func (s *Server) Heartbeat(_ context.Context, _ *pb.HeartbeatRequest) (*pb.HeartbeatResponse, error) {
 	return &pb.HeartbeatResponse{}, nil
+}
+
+func (s *Server) Ack(ctx context.Context, req *pb.AckRequest) (*pb.AckResponse, error) {
+	job, err := s.client.Read(ctx, &rspb.ReadRequest{
+		Key: fmt.Sprintf("printqueue/%v", req.GetId()),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("unable to read entry %v -> %w", req.GetId(), err)
+	}
+
+	val := &pb.StoredPrintRequest{}
+	err = proto.Unmarshal(job.GetValue().GetValue(), val)
+	if err != nil {
+		return nil, err
+	}
+
+	if val.GetDestination() == req.GetAckType() {
+		if val.GetFanout() == pb.Fanout_FANOUT_ONE {
+			_, err = s.client.Delete(ctx,
+				&rspb.DeleteRequest{
+					Key: fmt.Sprintf("printqueue/%v", req.GetId()),
+				})
+			return &pb.AckResponse{}, err
+		}
+	}
+
+	return &pb.AckResponse{}, nil
 }
