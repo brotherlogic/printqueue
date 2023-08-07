@@ -52,5 +52,25 @@ func (s *Server) Heartbeat(_ context.Context, _ *pb.HeartbeatRequest) (*pb.Heart
 }
 
 func (s *Server) Ack(ctx context.Context, req *pb.AckRequest) (*pb.AckResponse, error) {
+	job, err := s.client.Read(ctx, &rspb.ReadRequest{
+		Key: fmt.Sprintf("printqueue/%v", req.GetId()),
+	})
+	if err != nil {
+		fmt.Errorf("Unable to read entry %v -> %w", req.GetId(), err)
+	}
+
+	val := &pb.StoredPrintRequest{}
+	proto.Unmarshal(job.GetValue().GetValue(), val)
+
+	if val.GetDestination() == req.GetAckType() {
+		if val.GetFanout() == pb.Fanout_FANOUT_ONE {
+			_, err = s.client.Delete(ctx,
+				&rspb.DeleteRequest{
+					Key: fmt.Sprintf("printqueue/%v", req.GetId()),
+				})
+			return &pb.AckResponse{}, err
+		}
+	}
+
 	return &pb.AckResponse{}, nil
 }

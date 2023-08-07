@@ -42,7 +42,7 @@ func TestAck(t *testing.T) {
 	}
 
 	if len(queue) != 0 {
-		t.Errorf("Print job was not removed post ack: %v", queue)
+		t.Errorf("Print job was not removed post ack: %v (%v)", queue, len(queue))
 	}
 }
 
