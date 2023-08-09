@@ -41,7 +41,7 @@ message StoredPrintRequest {
     string origin = 2;
     Urgency urgency = 3;
     Destination destination = 4;
-    Fanout fanout = 5;
+    Fanout fanout = 5;z
 }
 
 message PrintResponse {
