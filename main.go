@@ -81,7 +81,7 @@ func main() {
 
 	go func() {
 		if err := gs.Serve(lis); err != nil {
-			log.Fatalf("printqueue is unable to serve grpc: %v", err)
+			log.Fatalf("printqueue is unable to listen on the grpc port: %v", err)
 		}
 		log.Fatalf("printqueue has closed the grpc port")
 	}()
