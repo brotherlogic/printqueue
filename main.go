@@ -80,6 +80,11 @@ func main() {
 	flag.Parse()
 
 	s := NewServer()
+	client, err := rstore_client.GetClient()
+	if err != nil {
+		log.Fatalf("Unable to build rstore client: %v", err)
+	}
+	s.client = client
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
