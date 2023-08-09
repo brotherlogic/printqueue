@@ -95,7 +95,10 @@ func main() {
 		log.Fatalf("printqueue has closed the grpc port")
 	}()
 
-	s.getQueue(context.Background())
+	_, err = s.getQueue(context.Background())
+	if err != nil {
+		log.Printf("Error getting queue: %v", err)
+	}
 
 	http.Handle("/metrics", promhttp.Handler())
 	err = http.ListenAndServe(fmt.Sprintf(":%v", *metricsPort), nil)
