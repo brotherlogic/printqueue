@@ -8,6 +8,8 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
@@ -21,6 +23,11 @@ import (
 var (
 	port        = flag.Int("port", 8080, "The server port for grpc traffic")
 	metricsPort = flag.Int("metrics_port", 8081, "Metrics port")
+
+	queueLen = promauto.NewGauge(prometheus.GaugeOpts{
+		Name: "printqueue_qlen",
+		Help: "The length of the working queue I think yes",
+	})
 )
 
 type printer struct {
@@ -48,6 +55,8 @@ func (s *Server) getQueue(ctx context.Context) ([]*pb.StoredPrintRequest, error)
 	if err != nil {
 		return nil, fmt.Errorf("unable to read keys: %w", err)
 	}
+
+	queueLen.Set(float64(len(keys.GetKeys())))
 
 	var stored []*pb.StoredPrintRequest
 	for _, key := range keys.GetKeys() {
@@ -85,6 +94,11 @@ func main() {
 		}
 		log.Fatalf("printqueue has closed the grpc port")
 	}()
+
+	_, err = s.getQueue(context.Background())
+	if err != nil {
+		log.Printf("Error getting queue: %v", err)
+	}
 
 	http.Handle("/metrics", promhttp.Handler())
 	err = http.ListenAndServe(fmt.Sprintf(":%v", *metricsPort), nil)
