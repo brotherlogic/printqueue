@@ -39,13 +39,35 @@ func (s *Server) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteR
 	return &pb.DeleteResponse{}, err
 }
 
+func convertToPrintJob(elem *pb.StoredPrintRequest) *pb.PrintJob {
+	return &pb.PrintJob{
+		Lines:   elem.GetLines(),
+		Urgency: elem.GetUrgency(),
+	}
+}
+
 func (s *Server) RegisterPrinter(ctx context.Context, req *pb.RegisterPrinterRequest) (*pb.RegisterPrinterResponse, error) {
 	s.printers = append(s.printers, &printer{
 		id:      req.GetId(),
 		address: req.GetCallbackAddress(),
 		ptype:   req.GetReceiverType(),
 	})
-	return &pb.RegisterPrinterResponse{}, nil
+
+	queue, err := s.getQueue(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var rqueue []*pb.PrintJob
+	for _, elem := range queue {
+		if elem.GetDestination() == req.GetReceiverType() {
+			rqueue = append(rqueue, convertToPrintJob(elem))
+		}
+	}
+
+	return &pb.RegisterPrinterResponse{
+		Jobs: rqueue,
+	}, nil
 }
 
 func (s *Server) Heartbeat(_ context.Context, _ *pb.HeartbeatRequest) (*pb.HeartbeatResponse, error) {
