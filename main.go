@@ -50,7 +50,7 @@ func (s *Server) getPrinters() []*printer {
 	return s.printers
 }
 
-func (s *Server) getQueue(ctx context.Context) ([]*pb.StoredPrintRequest, error) {
+func (s *Server) getQueue(ctx context.Context) (map[string]*pb.StoredPrintRequest, error) {
 	keys, err := s.client.GetKeys(ctx, &rspb.GetKeysRequest{Prefix: "printqueue/"})
 	if err != nil {
 		return nil, fmt.Errorf("unable to read keys: %w", err)
@@ -58,7 +58,7 @@ func (s *Server) getQueue(ctx context.Context) ([]*pb.StoredPrintRequest, error)
 
 	queueLen.Set(float64(len(keys.GetKeys())))
 
-	var stored []*pb.StoredPrintRequest
+	stored := make(map[string]*pb.StoredPrintRequest)
 	for _, key := range keys.GetKeys() {
 		data, err := s.client.Read(ctx, &rspb.ReadRequest{Key: key})
 		if err != nil {
@@ -70,7 +70,7 @@ func (s *Server) getQueue(ctx context.Context) ([]*pb.StoredPrintRequest, error)
 		if err != nil {
 			return nil, fmt.Errorf("cannot read stored data: %v -> %w", key, err)
 		}
-		stored = append(stored, val)
+		stored[key] = val
 	}
 
 	return stored, nil
