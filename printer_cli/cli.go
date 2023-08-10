@@ -5,12 +5,13 @@ import (
 	"log"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	pb "github.com/brotherlogic/printqueue/proto"
 )
 
 func main() {
-	conn, err := grpc.Dial("printer.brotherlogic-backend.com:80")
+	conn, err := grpc.Dial("print.brotherlogic-backend.com:80", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("Error dialing printer: %v", err)
 	}

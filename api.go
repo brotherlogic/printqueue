@@ -39,10 +39,11 @@ func (s *Server) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteR
 	return &pb.DeleteResponse{}, err
 }
 
-func convertToPrintJob(elem *pb.StoredPrintRequest) *pb.PrintJob {
+func convertToPrintJob(elem *pb.StoredPrintRequest, id string) *pb.PrintJob {
 	return &pb.PrintJob{
 		Lines:   elem.GetLines(),
 		Urgency: elem.GetUrgency(),
+		Id:      id,
 	}
 }
 
@@ -59,9 +60,9 @@ func (s *Server) RegisterPrinter(ctx context.Context, req *pb.RegisterPrinterReq
 	}
 
 	var rqueue []*pb.PrintJob
-	for _, elem := range queue {
+	for id, elem := range queue {
 		if elem.GetDestination() == req.GetReceiverType() {
-			rqueue = append(rqueue, convertToPrintJob(elem))
+			rqueue = append(rqueue, convertToPrintJob(elem, id))
 		}
 	}
 
