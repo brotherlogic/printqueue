@@ -77,7 +77,7 @@ func (s *Server) Heartbeat(_ context.Context, _ *pb.HeartbeatRequest) (*pb.Heart
 
 func (s *Server) Ack(ctx context.Context, req *pb.AckRequest) (*pb.AckResponse, error) {
 	job, err := s.client.Read(ctx, &rspb.ReadRequest{
-		Key: fmt.Sprintf("printqueue/%v", req.GetId()),
+		Key: fmt.Sprintf("%v", req.GetId()),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("unable to read the entry %v -> %w", req.GetId(), err)
