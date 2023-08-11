@@ -40,7 +40,8 @@ func TestAck(t *testing.T) {
 	}
 
 	_, err = s.Ack(context.Background(), &pb.AckRequest{
-		Id: jobs.GetJobs()[0].GetId(),
+		Id:      jobs.GetJobs()[0].GetId(),
+		AckType: pb.Destination_DESTINATION_RECEIPT,
 	})
 	if err != nil {
 		t.Errorf("Bad ack: %v", err)
