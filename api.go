@@ -40,10 +40,11 @@ func (s *Server) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteR
 }
 
 func convertToPrintJob(elem *pb.StoredPrintRequest, id string) *pb.PrintJob {
+	// The id here contains the  directory prefix - so strip that off
 	return &pb.PrintJob{
 		Lines:   elem.GetLines(),
 		Urgency: elem.GetUrgency(),
-		Id:      id,
+		Id:      id[len("printqueue/"):],
 	}
 }
 
