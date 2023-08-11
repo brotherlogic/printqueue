@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -103,7 +104,11 @@ func (s *Server) Ack(ctx context.Context, req *pb.AckRequest) (*pb.AckResponse, 
 					Key: fmt.Sprintf("printqueue/%v", req.GetId()),
 				})
 			return &pb.AckResponse{}, err
+		} else {
+			log.Printf("Skipping %v", val.GetFanout())
 		}
+	} else {
+		log.Printf("Skipping %v and %v", val.GetDestination(), req.GetAckType())
 	}
 
 	return &pb.AckResponse{}, nil
