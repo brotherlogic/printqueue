@@ -98,7 +98,7 @@ func (s *Server) Ack(ctx context.Context, req *pb.AckRequest) (*pb.AckResponse, 
 	}
 
 	if val.GetDestination() == req.GetAckType() {
-		if val.GetFanout() == pb.Fanout_FANOUT_ONE {
+		if val.GetFanout() == pb.Fanout_FANOUT_ONE || val.GetFanout() == pb.Fanout_FANOUT_UNKNOWN {
 			_, err = s.client.Delete(ctx,
 				&rspb.DeleteRequest{
 					Key: fmt.Sprintf("printqueue/%v", req.GetId()),
