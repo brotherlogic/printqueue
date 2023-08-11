@@ -31,8 +31,15 @@ func TestAck(t *testing.T) {
 		t.Errorf("Failed to print: %v and %v", res, err)
 	}
 
+	jobs, err := s.RegisterPrinter(context.Background(), &pb.RegisterPrinterRequest{
+		ReceiverType: pb.Destination(pb.Fanout_FANOUT_ONE),
+	})
+	if err != nil || len(jobs.GetJobs()) != 1 {
+		t.Fatalf("Bad register: %v and %v", err, jobs)
+	}
+
 	_, err = s.Ack(context.Background(), &pb.AckRequest{
-		Id: res.GetId(),
+		Id: jobs.GetJobs()[0].GetId(),
 	})
 	if err != nil {
 		t.Errorf("Bad ack: %v", err)
