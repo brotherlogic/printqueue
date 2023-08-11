@@ -25,14 +25,23 @@ func TestAck(t *testing.T) {
 	s := InitTestServer()
 
 	res, err := s.Print(context.Background(), &pb.PrintRequest{
-		Fanout: pb.Fanout_FANOUT_ONE,
+		Fanout:      pb.Fanout_FANOUT_ONE,
+		Destination: pb.Destination_DESTINATION_RECEIPT,
 	})
 	if err != nil || res.GetId() == "" {
 		t.Errorf("Failed to print: %v and %v", res, err)
 	}
 
+	jobs, err := s.RegisterPrinter(context.Background(), &pb.RegisterPrinterRequest{
+		ReceiverType: pb.Destination_DESTINATION_RECEIPT,
+	})
+	if err != nil || len(jobs.GetJobs()) != 1 {
+		t.Fatalf("Bad register: %v and %v", err, jobs)
+	}
+
 	_, err = s.Ack(context.Background(), &pb.AckRequest{
-		Id: res.GetId(),
+		Id:      jobs.GetJobs()[0].GetId(),
+		AckType: pb.Destination_DESTINATION_RECEIPT,
 	})
 	if err != nil {
 		t.Errorf("Bad ack: %v", err)
