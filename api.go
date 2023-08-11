@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -77,6 +79,10 @@ func (s *Server) Heartbeat(_ context.Context, _ *pb.HeartbeatRequest) (*pb.Heart
 }
 
 func (s *Server) Ack(ctx context.Context, req *pb.AckRequest) (*pb.AckResponse, error) {
+	if req.GetAckType() == pb.Destination_DESTINATION_UNKNOWN {
+		return nil, status.Errorf(codes.InvalidArgument, "You must inclue an ack type")
+	}
+
 	job, err := s.client.Read(ctx, &rspb.ReadRequest{
 		Key: fmt.Sprintf("printqueue/%v", req.GetId()),
 	})
