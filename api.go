@@ -16,6 +16,10 @@ import (
 )
 
 func (s *Server) Print(ctx context.Context, req *pb.PrintRequest) (*pb.PrintResponse, error) {
+	if len(req.GetLines()) == 0 {
+		return nil, status.Errorf(codes.FailedPrecondition, "you need to have something to print: %v", req)
+	}
+
 	uid := uuid.New().String()
 
 	stored := &pb.StoredPrintRequest{
