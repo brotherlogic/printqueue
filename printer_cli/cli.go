@@ -13,7 +13,7 @@ import (
 func main() {
 	conn, err := grpc.Dial("print.brotherlogic-backend.com:80", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("Error dialing printer: %v", err)
+		log.Fatalf("error dialing printer: %v", err)
 	}
 
 	client := pb.NewPrintServiceClient(conn)
@@ -23,7 +23,7 @@ func main() {
 		Destination: pb.Destination_DESTINATION_RECEIPT,
 	})
 	if err != nil {
-		log.Fatalf("Bad print: %v", err)
+		log.Fatalf("bad print: %v", err)
 	}
 
 }
