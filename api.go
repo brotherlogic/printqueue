@@ -35,8 +35,11 @@ func (s *Server) Print(ctx context.Context, req *pb.PrintRequest) (*pb.PrintResp
 		Key:   fmt.Sprintf("printqueue/%v", uid),
 		Value: &anypb.Any{Value: data},
 	})
+	if err != nil {
+		return nil, fmt.Errorf("unable to write print request to queue: %w", err)
+	}
 
-	return &pb.PrintResponse{Id: uid}, err
+	return &pb.PrintResponse{Id: uid}, nil
 }
 
 func (s *Server) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteResponse, error) {
