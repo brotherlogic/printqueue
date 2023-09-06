@@ -19,7 +19,7 @@ func main() {
 	client := pb.NewPrintServiceClient(conn)
 
 	_, err = client.Print(context.Background(), &pb.PrintRequest{
-		Lines:       []string{"Hello"},
+		Lines:       []string{"hello"},
 		Destination: pb.Destination_DESTINATION_RECEIPT,
 	})
 	if err != nil {
