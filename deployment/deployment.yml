@@ -61,7 +61,7 @@ spec:
     spec:
       containers:
       - name: printqueue
-        image: registry.brotherlogic-backend.com/brotherlogic/printqueue:0.32.0 # {"$imagepolicy": "flux-system:printqueue"}
+        image: registry.brotherlogic-backend.com/brotherlogic/printqueue:0.33.0 # {"$imagepolicy": "flux-system:printqueue"}
         ports:
         - containerPort: 8080
       imagePullSecrets:
