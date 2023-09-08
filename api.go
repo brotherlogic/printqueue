@@ -16,6 +16,10 @@ import (
 )
 
 func (s *Server) Print(ctx context.Context, req *pb.PrintRequest) (*pb.PrintResponse, error) {
+	if req.GetDestination() == pb.Destination_DESTINATION_UNKNOWN {
+		return nil, status.Errorf(codes.FailedPrecondition, "you must specifiy a destination type")
+	}
+
 	if len(req.GetLines()) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "you need to have something at the least to print: %v", req)
 	}
@@ -72,9 +76,9 @@ func (s *Server) RegisterPrinter(ctx context.Context, req *pb.RegisterPrinterReq
 
 	var rqueue []*pb.PrintJob
 	for id, elem := range queue {
-		if elem.GetDestination() == req.GetReceiverType() {
-			rqueue = append(rqueue, convertToPrintJob(elem, id))
-		}
+		//if elem.GetDestination() == req.GetReceiverType() {
+		rqueue = append(rqueue, convertToPrintJob(elem, id))
+		//}
 	}
 
 	return &pb.RegisterPrinterResponse{
