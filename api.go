@@ -16,6 +16,10 @@ import (
 )
 
 func (s *Server) Print(ctx context.Context, req *pb.PrintRequest) (*pb.PrintResponse, error) {
+	if req.GetDestination() == pb.Destination_DESTINATION_UNKNOWN {
+		return nil, status.Errorf(codes.FailedPrecondition, "you must specifiy a destination type")
+	}
+
 	if len(req.GetLines()) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "you need to have something at the least to print: %v", req)
 	}
@@ -74,9 +78,9 @@ func (s *Server) RegisterPrinter(ctx context.Context, req *pb.RegisterPrinterReq
 
 	var rqueue []*pb.PrintJob
 	for id, elem := range queue {
-		if elem.GetDestination() == req.GetReceiverType() {
-			rqueue = append(rqueue, convertToPrintJob(elem, id))
-		}
+		//if elem.GetDestination() == req.GetReceiverType() {
+		rqueue = append(rqueue, convertToPrintJob(elem, id))
+		//}
 	}
 
 	return &pb.RegisterPrinterResponse{
@@ -89,9 +93,9 @@ func (s *Server) Heartbeat(_ context.Context, _ *pb.HeartbeatRequest) (*pb.Heart
 }
 
 func (s *Server) Ack(ctx context.Context, req *pb.AckRequest) (*pb.AckResponse, error) {
-	if req.GetAckType() == pb.Destination_DESTINATION_UNKNOWN {
+	/*if req.GetAckType() == pb.Destination_DESTINATION_UNKNOWN {
 		return nil, status.Errorf(codes.InvalidArgument, "you must inclue an ack type")
-	}
+	}*/
 
 	log.Printf("ACK %v", req)
 
@@ -108,19 +112,19 @@ func (s *Server) Ack(ctx context.Context, req *pb.AckRequest) (*pb.AckResponse, 
 		return nil, err
 	}
 
-	if val.GetDestination() == req.GetAckType() {
-		if val.GetFanout() == pb.Fanout_FANOUT_ONE || val.GetFanout() == pb.Fanout_FANOUT_UNKNOWN {
-			_, err = s.client.Delete(ctx,
-				&rspb.DeleteRequest{
-					Key: fmt.Sprintf("printqueue/%v", req.GetId()),
-				})
-			return &pb.AckResponse{}, err
-		} else {
-			log.Printf("Skipping %v", val.GetFanout())
-		}
+	//	if val.GetDestination() == req.GetAckType() {
+	if val.GetFanout() == pb.Fanout_FANOUT_ONE || val.GetFanout() == pb.Fanout_FANOUT_UNKNOWN {
+		_, err = s.client.Delete(ctx,
+			&rspb.DeleteRequest{
+				Key: fmt.Sprintf("printqueue/%v", req.GetId()),
+			})
+		return &pb.AckResponse{}, err
 	} else {
-		log.Printf("Skipping %v and %v", val.GetDestination(), req.GetAckType())
+		log.Printf("Skipping %v", val.GetFanout())
 	}
+	/*} else {
+		log.Printf("Skipping %v and %v", val.GetDestination(), req.GetAckType())
+	}*/
 
 	return &pb.AckResponse{}, nil
 }
