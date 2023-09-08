@@ -15,7 +15,7 @@ func InitTestServer() *Server {
 func TestPrint(t *testing.T) {
 	s := InitTestServer()
 
-	res, err := s.Print(context.Background(), &pb.PrintRequest{Lines: []string{"helllo"}})
+	res, err := s.Print(context.Background(), &pb.PrintRequest{Lines: []string{"helllo"}, Destination: pb.Destination_DESTINATION_RECEIPT})
 	if err != nil || res.GetId() == "" {
 		t.Errorf("Failed to print: %v and %v", res, err)
 	}
@@ -61,7 +61,7 @@ func TestAck(t *testing.T) {
 func TestDelete(t *testing.T) {
 	s := InitTestServer()
 
-	res, err := s.Print(context.Background(), &pb.PrintRequest{Lines: []string{"helllo"}})
+	res, err := s.Print(context.Background(), &pb.PrintRequest{Lines: []string{"helllo"}, Destination: pb.Destination_DESTINATION_RECEIPT})
 	if err != nil || res.GetId() == "" {
 		t.Errorf("Failed to print: %v and %v", res, err)
 	}
