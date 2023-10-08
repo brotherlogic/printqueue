@@ -120,7 +120,7 @@ func (s *Server) Ack(ctx context.Context, req *pb.AckRequest) (*pb.AckResponse, 
 				})
 			return &pb.AckResponse{}, err
 		} else {
-			log.Printf("skipping %v", val.GetFanout())
+			log.Printf("skipping this %v", val.GetFanout())
 		}
 	} else {
 		log.Printf("skipping %v and %v", val.GetDestination(), req.GetAckType())
