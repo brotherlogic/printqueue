@@ -79,7 +79,7 @@ func (s *Server) RegisterPrinter(ctx context.Context, req *pb.RegisterPrinterReq
 	var rqueue []*pb.PrintJob
 	for id, elem := range queue {
 		if elem.GetDestination() == req.GetReceiverType() {
-		rqueue = append(rqueue, convertToPrintJob(elem, id))
+			rqueue = append(rqueue, convertToPrintJob(elem, id))
 		}
 	}
 
@@ -112,18 +112,18 @@ func (s *Server) Ack(ctx context.Context, req *pb.AckRequest) (*pb.AckResponse, 
 		return nil, err
 	}
 
-		if val.GetDestination() == req.GetAckType() {
-	if val.GetFanout() == pb.Fanout_FANOUT_ONE || val.GetFanout() == pb.Fanout_FANOUT_UNKNOWN {
-		_, err = s.client.Delete(ctx,
-			&rspb.DeleteRequest{
-				Key: fmt.Sprintf("printqueue/%v", req.GetId()),
-			})
-		return &pb.AckResponse{}, err
+	if val.GetDestination() == req.GetAckType() {
+		if val.GetFanout() == pb.Fanout_FANOUT_ONE || val.GetFanout() == pb.Fanout_FANOUT_UNKNOWN {
+			_, err = s.client.Delete(ctx,
+				&rspb.DeleteRequest{
+					Key: fmt.Sprintf("printqueue/%v", req.GetId()),
+				})
+			return &pb.AckResponse{}, err
+		} else {
+			log.Printf("skipping %v", val.GetFanout())
+		}
 	} else {
-		log.Printf("Skipping %v", val.GetFanout())
-	}
-	} else {
-		log.Printf("Skipping %v and %v", val.GetDestination(), req.GetAckType())
+		log.Printf("skipping %v and %v", val.GetDestination(), req.GetAckType())
 	}
 
 	return &pb.AckResponse{}, nil
