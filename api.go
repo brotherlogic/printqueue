@@ -103,7 +103,7 @@ func (s *Server) Ack(ctx context.Context, req *pb.AckRequest) (*pb.AckResponse, 
 		Key: fmt.Sprintf("printqueue/%v", req.GetId()),
 	})
 	if err != nil {
-		return nil, fmt.Errorf("unable to read the entry %v -> %w", req.GetId(), err)
+		return nil, fmt.Errorf("unable to read the entry for some reason %v -> %w", req.GetId(), err)
 	}
 
 	val := &pb.StoredPrintRequest{}
