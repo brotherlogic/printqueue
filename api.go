@@ -21,7 +21,7 @@ func (s *Server) Print(ctx context.Context, req *pb.PrintRequest) (*pb.PrintResp
 	}
 
 	if len(req.GetLines()) == 0 {
-		return nil, status.Errorf(codes.FailedPrecondition, "you need to have something at the least to print: %v", req)
+		return nil, status.Errorf(codes.FailedPrecondition, "you need to have something to print: %v", req)
 	}
 
 	log.Printf("Printing: %v", req)
