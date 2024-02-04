@@ -25,25 +25,25 @@ spec:
   selector:
     app: printqueue
 ---
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: printqueue
-  namespace: monitoring
-  labels:
-    release: kube-prometheus-stack
-spec:
-  endpoints:
-    - port: metrics
-      path: /metrics
-      interval: 30s
-  namespaceSelector:
-    matchNames:
-      - printqueue
-  selector:
-    matchLabels:
-      app: printqueue
----
+#apiVersion: monitoring.coreos.com/v1
+#kind: ServiceMonitor
+#metadata:
+#  name: printqueue
+#  namespace: monitoring
+#  labels:
+#    release: kube-prometheus-stack
+#spec:
+#  endpoints:
+#    - port: metrics
+#      path: /metrics
+#      interval: 30s
+#  namespaceSelector:
+#    matchNames:
+#      - printqueue
+#  selector:
+#    matchLabels:
+#      app: printqueue
+#---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
