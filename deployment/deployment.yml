@@ -59,10 +59,11 @@ spec:
       labels:
         app: printqueue
     spec:
+      nodeName: klust1
       containers:
-      - name: printqueue
-        image: registry.brotherlogic-backend.com/brotherlogic/printqueue:0.42.0 # {"$imagepolicy": "flux-system:printqueue"}
-        ports:
-        - containerPort: 8080
+        - name: printqueue
+          image: registry.brotherlogic-backend.com/brotherlogic/printqueue:0.42.0 # {"$imagepolicy": "flux-system:printqueue"}
+          ports:
+            - containerPort: 8080
       imagePullSecrets:
-      - name: regcred
+        - name: regcred
