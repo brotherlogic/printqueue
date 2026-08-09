@@ -73,7 +73,7 @@ func (s *Server) RegisterPrinter(ctx context.Context, req *pb.RegisterPrinterReq
 
 	queue, err := s.getQueue(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to queue: %w", err)
 	}
 
 	var rqueue []*pb.PrintJob
