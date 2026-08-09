@@ -65,6 +65,7 @@ func convertToPrintJob(elem *pb.StoredPrintRequest, id string) *pb.PrintJob {
 }
 
 func (s *Server) RegisterPrinter(ctx context.Context, req *pb.RegisterPrinterRequest) (*pb.RegisterPrinterResponse, error) {
+     log.Printf("Received %v", req)
 	s.printers = append(s.printers, &printer{
 		id:      req.GetId(),
 		address: req.GetCallbackAddress(),
