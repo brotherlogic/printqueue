@@ -22,7 +22,7 @@ import (
 
 var (
 	port        = flag.Int("port", 8080, "The server port for grpc traffic")
-	metricsPort = flag.Int("metrics_port", 8081, "Metrics port")
+	metricsPort = flag.Int("metrics_port", 8081, "Metrics port only")
 
 	queueLen = promauto.NewGauge(prometheus.GaugeOpts{
 		Name: "printqueue_qlen",
