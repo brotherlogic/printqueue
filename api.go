@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 
 	pb "github.com/brotherlogic/printqueue/proto"
-	rspb "github.com/brotherlogic/rstore/proto"
+	pspb "github.com/brotherlogic/pstore/proto"
 	"github.com/google/uuid"
 )
 
@@ -37,7 +37,7 @@ func (s *Server) Print(ctx context.Context, req *pb.PrintRequest) (*pb.PrintResp
 	}
 	data, _ := proto.Marshal(stored)
 
-	_, err := s.client.Write(ctx, &rspb.WriteRequest{
+	_, err := s.client.Write(ctx, &pspb.WriteRequest{
 		Key:   fmt.Sprintf("printqueue/%v", uid),
 		Value: &anypb.Any{Value: data},
 	})
@@ -49,7 +49,7 @@ func (s *Server) Print(ctx context.Context, req *pb.PrintRequest) (*pb.PrintResp
 }
 
 func (s *Server) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteResponse, error) {
-	_, err := s.client.Delete(ctx, &rspb.DeleteRequest{
+	_, err := s.client.Delete(ctx, &pspb.DeleteRequest{
 		Key: fmt.Sprintf("printqueue/%v", req.GetId()),
 	})
 	return &pb.DeleteResponse{}, err
@@ -100,7 +100,7 @@ func (s *Server) Ack(ctx context.Context, req *pb.AckRequest) (*pb.AckResponse, 
 
 	log.Printf("ACK %v", req)
 
-	job, err := s.client.Read(ctx, &rspb.ReadRequest{
+	job, err := s.client.Read(ctx, &pspb.ReadRequest{
 		Key: fmt.Sprintf("printqueue/%v", req.GetId()),
 	})
 	if err != nil {
@@ -116,7 +116,7 @@ func (s *Server) Ack(ctx context.Context, req *pb.AckRequest) (*pb.AckResponse, 
 	if val.GetDestination() == req.GetAckType() {
 		if val.GetFanout() == pb.Fanout_FANOUT_ONE || val.GetFanout() == pb.Fanout_FANOUT_UNKNOWN {
 			_, err = s.client.Delete(ctx,
-				&rspb.DeleteRequest{
+				&pspb.DeleteRequest{
 					Key: fmt.Sprintf("printqueue/%v", req.GetId()),
 				})
 			return &pb.AckResponse{}, err

@@ -5,11 +5,11 @@ import (
 	"testing"
 
 	pb "github.com/brotherlogic/printqueue/proto"
-	rstore_client "github.com/brotherlogic/rstore/client"
+	pstore_client "github.com/brotherlogic/pstore/client"
 )
 
 func InitTestServer() *Server {
-	return &Server{client: rstore_client.GetTestClient()}
+	return &Server{client: pstore_client.GetTestClient()}
 }
 
 func TestPrint(t *testing.T) {

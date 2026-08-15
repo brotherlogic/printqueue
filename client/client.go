@@ -26,7 +26,7 @@ type PrintQueueClient struct {
 }
 
 func NewPrintQueueClient(ctx context.Context) (*PrintQueueClient, error) {
-	conn, err := grpc.Dial("print.brotherlogic-backend.com:80", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient("print.brotherlogic-backend.com:80", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("Error dialing printer: %v", err)
 	}
